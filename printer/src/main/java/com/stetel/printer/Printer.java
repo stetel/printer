@@ -12,7 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -24,8 +26,6 @@ public class Printer {
     private final static long MAX_FILE_SIZE = 10485760; // 10 MB
     private static final SimpleDateFormat LOG_DATE_FORMAT =
             new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
-    private static final String LOGCAT_SPLIT_REGEX = String.format(Locale.US,
-            "(?<=\\G.{%1$d})", LINE_MAX_CHARS);
     private static final String PRINTER_TAG = "Printer";
     private static UncaughtExceptionHandler defaultCrashHandler;
     private static File logFile;
@@ -171,8 +171,9 @@ public class Printer {
     }
 
     private static void writeLogcat(int type, String tag, String message) {
-        for (String line : message.split(LOGCAT_SPLIT_REGEX)) {
-            Log.println(type, tag, line);
+        int len = message.length();
+        for (int i = 0; i < len; i += LINE_MAX_CHARS) {
+            Log.println(type, tag, message.substring(i, Math.min(len, i + LINE_MAX_CHARS)));
         }
     }
 

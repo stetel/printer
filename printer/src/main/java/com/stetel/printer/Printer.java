@@ -34,37 +34,35 @@ public class Printer {
     private static final Object LOCK = new Object();
 
     /**
-     * Power on the printer.<br/>
-     * Automatically uses the class name as the tag and does not write messages in a log file.<br/>
+     * Power on the printer.<br>
+     * Automatically uses the class name as the tag and does not write messages in a log file.<br>
      * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
-     * manager.<br/>
-     * <br/>
-     * <i>Notes:
+     * manager.<br>
+     * <br>
+     * Notes:
      * <ul>
      *  <li>Should be invoked in the Application class, otherwise the Android system could
      *      power off your printer.</li>
      * </ul>
-     * </i>
      */
     public static void powerOn() {
         Printer.powerOn(null, null, null);
     }
 
     /**
-     * Power on the printer.<br/>
+     * Power on the printer.<br>
      * Automatically uses the class name as the tag and writes messages in a log file in the
-     * external cache folder of the app.<br/>
-     * File location: <i>/sdcard/Android/data/APP_PACKAGE_NAME/cache/Printer.log</i><br/>
+     * external cache folder of the app.<br>
+     * File location: <i>/sdcard/Android/data/APP_PACKAGE_NAME/cache/Printer.log</i><br>
      * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
-     * manager or cannot write the log file.<br/>
-     * <br/>
-     * <i>Notes:
+     * manager or cannot write the log file.<br>
+     * <br>
+     * Notes:
      * <ul>
      *  <li>Should be invoked in the Application class, otherwise the Android system could
      *      power off your printer.</li>
      *  <li>Writing to a file is a slow operation which can affect optimization tests</li>
      * </ul>
-     * </i>
      *
      * @param context Any context
      */
@@ -73,21 +71,19 @@ public class Printer {
     }
 
     /**
-     * Power on the printer.<br/>
+     * Power on the printer.<br>
      * Automatically uses the class name as the tag and writes messages in a log file in the
-     * specified location.<br/>
+     * specified location.<br>
      * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
-     * manager or cannot write the log file.<br/>
-     * <br/>
-     * <i>Notes:
+     * manager or cannot write the log file.<br>
+     * <br>
+     * Notes:
      * <ul>
-     *  <li>Problems will be reported in the Logcat with the "Printer" tag</li>
      *  <li>Should be invoked in the Application class, otherwise the Android system could
      *      power off your printer.</li>
      *  <li>Writing to a file is a slow operation which can affect optimization tests</li>
      *  <li>Printer is not including any permissions</li>
      * </ul>
-     * </i>
      *
      * @param context Any context
      * @param filepath Absolute path location where to write the log file
@@ -97,18 +93,16 @@ public class Printer {
     }
 
     /**
-     * Power on the printer.<br/>
-     * Uses a custom tag and does not write messages in a log file.<br/>
+     * Power on the printer.<br>
+     * Uses a custom tag and does not write messages in a log file.<br>
      * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
-     * manager.<br/>
-     * <br/>
-     * <i>Notes:
+     * manager.<br>
+     * <br>
+     * Notes:
      * <ul>
-     *  <li>Problems will be reported in the Logcat with the "Printer" tag</li>
      *  <li>Should be invoked in the Application class, otherwise the Android system could
      *      power off your printer.</li>
      * </ul>
-     * </i>
      *
      * @param tag Tag to be used for all messages
      */
@@ -117,21 +111,19 @@ public class Printer {
     }
 
     /**
-     * Power on the printer.<br/>
-     * Uses a custom tag and writes messages in a log file in the external cache folder of the app.<br/>
-     * The file name is the same as the tag.<br/>
-     * File location: <i>/sdcard/Android/data/APP_PACKAGE_NAME/cache/TAG.log</i><br/>
+     * Power on the printer.<br>
+     * Uses a custom tag and writes messages in a log file in the external cache folder of the app.<br>
+     * The file name is the same as the tag.<br>
+     * File location: <i>/sdcard/Android/data/APP_PACKAGE_NAME/cache/TAG.log</i><br>
      * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
-     * manager or cannot write the log file.<br/>
-     * <br/>
-     * <i>Notes:
+     * manager or cannot write the log file.<br>
+     * <br>
+     * Notes:
      * <ul>
-     *  <li>Problems will be reported in the Logcat with the "Printer" tag</li>
      *  <li>Should be invoked in the Application class, otherwise the Android system could
      *      power off your printer.</li>
      *  <li>Writing to a file is a slow operation which can affect optimization tests</li>
      * </ul>
-     * </i>
      *
      * @param tag Tag to be used for all messages and for the log file name
      * @param context Any context
@@ -141,20 +133,18 @@ public class Printer {
     }
 
     /**
-     * Power on the printer.<br/>
-     * Uses a custom tag and writes messages in a log file in the specified location.<br/>
+     * Power on the printer.<br>
+     * Uses a custom tag and writes messages in a log file in the specified location.<br>
      * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
-     * manager or cannot write the log file.<br/>
-     * <br/>
-     * <i>Notes:
+     * manager or cannot write the log file.<br>
+     * <br>
+     * Notes:
      * <ul>
-     *  <li>Problems will be reported in the Logcat with the "Printer" tag</li>
      *  <li>Should be invoked in the Application class, otherwise the Android system could
      *      power off your printer.</li>
      *  <li>Writing to a file is a slow operation which can affect optimization tests</li>
      *  <li>Printer is not including any permissions</li>
      * </ul>
-     * </i>
      *
      * @param tag Tag to be used for all messages and for the log file name
      * @param context Any context
@@ -226,7 +216,7 @@ public class Printer {
     }
 
     /**
-     * Checks if the printer is on.<br/>
+     * Checks if the printer is on.<br>
      * Helpful if you need to write the results of heavy or unusual operations.
      *
      * @return Power status
@@ -238,7 +228,7 @@ public class Printer {
     }
 
     /**
-     * Prints an INFO message.<br/>
+     * Prints an INFO message.<br>
      * Objects are concatenated as a string.
      *
      * @param objs Objects to print
@@ -248,7 +238,7 @@ public class Printer {
     }
 
     /**
-     * Prints a WARNING message.<br/>
+     * Prints a WARNING message.<br>
      * Objects are concatenated as a string.
      *
      * @param objs Objects to print
@@ -258,7 +248,7 @@ public class Printer {
     }
 
     /**
-     * Prints an ERROR message.<br/>
+     * Prints an ERROR message.<br>
      * Objects are concatenated as a string.
      *
      * @param objs Objects to print
@@ -268,7 +258,7 @@ public class Printer {
     }
 
     /**
-     * Prints a DEBUG message.<br/>
+     * Prints a DEBUG message.<br>
      * Objects are concatenated as a string.
      *
      * @param objs Objects to print
@@ -279,7 +269,7 @@ public class Printer {
 
 
     /**
-     * Create the log file and prints a message directly.<br/>
+     * Create the log file and prints a message directly.<br>
      *
      * @param message Message to print
      */
@@ -302,7 +292,7 @@ public class Printer {
     }
 
     /**
-     * Main method to print messages.<br/>
+     * Main method to print messages.<br>
      * Takes care of concatenating the objects and print the message on both the Logcat and the log
      * file.
      *

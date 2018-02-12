@@ -33,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
         stringIntegerMap.put("three", 3);
         Printer.i("Map: ", stringIntegerMap);
 
-        Printer.e("Exception: ", new Exception());
+        try {
+            int foo = 2/0;
+        } catch (Exception e) {
+            Printer.e("Exception: ", e);
+        }
     }
 }

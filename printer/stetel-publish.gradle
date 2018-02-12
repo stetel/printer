@@ -5,7 +5,7 @@ apply plugin: 'maven-publish'
 /*
  This Gradle file takes care of creating anything necessary to publish a library module to the Stetel Maven repository.
 
- Version: 0.9.6
+ Version: 0.9.7
  */
 Properties stetelPublishProps = new Properties()
 def stetelPublishFile = file('stetel-publish.properties')
@@ -106,7 +106,9 @@ task askStetelPublishMavenPassword {
 
 publishing {
     publications {
-        android.libraryVariants.all { variant ->
+        android.libraryVariants.stream().filter { variant ->
+            variant.getName() != "debug" && !variant.getName().endsWith("Debug")
+        }.forEach() { variant ->
             "${variant.getName()}"(MavenPublication) {
                 groupId stetelPublishProps.getProperty('groupId')
                 artifactId stetelPublishProps.getProperty('artifactId')

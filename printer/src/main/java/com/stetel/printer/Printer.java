@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.Locale;
 
 
@@ -27,12 +26,24 @@ public class Printer {
             new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
     private static final String LOGCAT_SPLIT_REGEX = String.format(Locale.US,
             "(?<=\\G.{%1$d})", LINE_MAX_CHARS);
-    private static final String DEFAULT_TAG = "Printer";
+    private static final String PRINTER_TAG = "Printer";
     private static UncaughtExceptionHandler defaultCrashHandler;
     private static File logFile;
     private static String tag;
     private static boolean poweredOn;
     private static final Object LOCK = new Object();
+
+    public static void powerOn() {
+        Printer.powerOn(null, null, null);
+    }
+
+    public static void powerOn(Context context) {
+        Printer.powerOn(null, context, null);
+    }
+
+    public static void powerOn(Context context, String filepath) {
+        Printer.powerOn(null, context, filepath);
+    }
 
     public static void powerOn(String tag) {
         Printer.powerOn(tag, null, null);
@@ -45,15 +56,17 @@ public class Printer {
     public static void powerOn(String tag, Context context, String filepath) {
         synchronized (LOCK) {
             Printer.defaultCrashHandler = Thread.getDefaultUncaughtExceptionHandler();
-            Printer.tag = TextUtils.isEmpty(tag) ? DEFAULT_TAG : tag;
+            Printer.tag = tag;
             // if context is present, but not the filepath, we use the default cache location
             if (TextUtils.isEmpty(filepath)) {
                 if (context != null) {
                     File externalCacheDir = context.getExternalCacheDir();
                     if (externalCacheDir == null) {
-                        writeLogcat(Log.WARN, "Printer - Default location for log file not available");
+                        Log.w(PRINTER_TAG, "Printer - Default location for log file not available");
                     } else {
-                        Printer.logFile = new File(externalCacheDir.getAbsolutePath() + "/" + Printer.tag + ".log");
+                        String defaultPath = externalCacheDir.getAbsolutePath() + "/" +
+                                (TextUtils.isEmpty(tag) ? PRINTER_TAG : tag) + ".log";
+                        Printer.logFile = new File(defaultPath);
                     }
                 }
             } else {
@@ -82,7 +95,7 @@ public class Printer {
                     }
                 });
             } catch (SecurityException e) {
-                writeLogcat(Log.WARN, "Printer - Cannot log fatal exceptions");
+                Log.w(PRINTER_TAG,"Printer - Cannot log fatal exceptions");
             }
             Printer.poweredOn = true;
         }
@@ -94,7 +107,7 @@ public class Printer {
             bufferWriter = new BufferedWriter(new FileWriter(Printer.logFile, false));
             bufferWriter.write(message);
         } catch (Exception e) {
-            writeLogcat(Log.WARN, "Printer - Cannot create log file");
+            Log.w(PRINTER_TAG,"Printer - Cannot create log file");
         } finally {
             if (bufferWriter!= null) {
                 try {
@@ -149,19 +162,21 @@ public class Printer {
                         message.append(obj);
                     }
                 }
-                writeLogcat(type, message.toString());
-                writeFile(type, message.toString());
+                String tag = TextUtils.isEmpty(Printer.tag) ?
+                        Printer.getCurrentClassName() : Printer.tag;
+                writeLogcat(type, tag, message.toString());
+                writeFile(type, tag, message.toString());
             }
         }
     }
 
-    private static void writeLogcat(int type, String message) {
+    private static void writeLogcat(int type, String tag, String message) {
         for (String line : message.split(LOGCAT_SPLIT_REGEX)) {
             Log.println(type, tag, line);
         }
     }
 
-    private static void writeFile(int type, String message) {
+    private static void writeFile(int type, String tag, String message) {
         if (Printer.logFile != null) {
             String messageTypePrefix = "";
             switch (type) {
@@ -195,5 +210,27 @@ public class Printer {
                 }
             }
         }
+    }
+
+    private static String getCurrentClassName() {
+        boolean printerClassFoundPrev = false;
+        try {
+            final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            for (StackTraceElement stackTraceElement : stackTraceElements) {
+                boolean printerClassFound = stackTraceElement.getClassName().equals(Printer.class.getName());
+                if (printerClassFoundPrev && !printerClassFound) {
+                    try {
+                        return stackTraceElement.getClassName()
+                                .substring(stackTraceElement.getClassName().lastIndexOf(".") + 1);
+                    } catch (Exception e) {
+                        return stackTraceElement.getClassName();
+                    }
+                }
+                printerClassFoundPrev = printerClassFound;
+            }
+        } catch (Exception e) {
+            // do nothing
+        }
+        return PRINTER_TAG;
     }
 }

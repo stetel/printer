@@ -73,13 +73,15 @@ public class Printer {
                 Printer.logFile = new File(filepath);
             }
             if (Printer.logFile != null) {
-                if (!Printer.logFile.exists()) { // creates a new file and updates the media scanner
+                if (!Printer.logFile.exists()) {
+                    // creates a new file and updates the media scanner
                     createLogFile("");
                     if (context != null) {
                         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                                 Uri.fromFile(Printer.logFile)));
                     }
-                } else if (Printer.logFile.length() > MAX_FILE_SIZE) { // creates a new file if exceeding max size
+                } else if (Printer.logFile.length() > MAX_FILE_SIZE) {
+                    // creates a new file if exceeding max size
                     createLogFile("...\n");
                 }
             }
@@ -98,24 +100,6 @@ public class Printer {
                 Log.w(PRINTER_TAG,"Printer - Cannot log fatal exceptions");
             }
             Printer.poweredOn = true;
-        }
-    }
-
-    private static void createLogFile(String message) {
-        BufferedWriter bufferWriter = null;
-        try {
-            bufferWriter = new BufferedWriter(new FileWriter(Printer.logFile, false));
-            bufferWriter.write(message);
-        } catch (Exception e) {
-            Log.w(PRINTER_TAG,"Printer - Cannot create log file");
-        } finally {
-            if (bufferWriter!= null) {
-                try {
-                    bufferWriter.close();
-                } catch (IOException e) {
-                    // do nothing
-                }
-            }
         }
     }
 
@@ -151,15 +135,35 @@ public class Printer {
         msg(Log.DEBUG, objs);
     }
 
+    private static void createLogFile(String message) {
+        BufferedWriter bufferWriter = null;
+        try {
+            bufferWriter = new BufferedWriter(new FileWriter(Printer.logFile, false));
+            bufferWriter.write(message);
+        } catch (Exception e) {
+            Log.w(PRINTER_TAG,"Printer - Cannot create log file");
+        } finally {
+            if (bufferWriter!= null) {
+                try {
+                    bufferWriter.close();
+                } catch (IOException e) {
+                    // do nothing
+                }
+            }
+        }
+    }
+
     private static void msg(int type, Object... objs) {
         synchronized (LOCK) {
             if (Printer.poweredOn) {
-                StringBuilder message = new StringBuilder(objs.length);
-                for (Object obj : objs) {
-                    if (obj instanceof Throwable) {
-                        message.append(Log.getStackTraceString((Throwable) obj));
-                    } else {
-                        message.append(obj);
+                StringBuilder message = new StringBuilder();
+                if (objs != null) {
+                    for (Object obj : objs) {
+                        if (obj instanceof Throwable) {
+                            message.append(Log.getStackTraceString((Throwable) obj));
+                        } else {
+                            message.append(obj);
+                        }
                     }
                 }
                 String tag = TextUtils.isEmpty(Printer.tag) ?

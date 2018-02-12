@@ -17,7 +17,9 @@ import java.util.Locale;
 
 
 /**
- *
+ * Printer allows to easily print log messages on Logcat and files.
+ * You must power on the printer to print messages, otherwise they are discarded.
+ * The class is thread-safe.
  */
 public class Printer {
     private final static int LINE_MAX_CHARS = 2000;
@@ -31,26 +33,133 @@ public class Printer {
     private static boolean poweredOn;
     private static final Object LOCK = new Object();
 
+    /**
+     * Power on the printer.<br/>
+     * Automatically uses the class name as the tag and does not write messages in a log file.<br/>
+     * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
+     * manager.<br/>
+     * <br/>
+     * <i>Notes:
+     * <ul>
+     *  <li>Should be invoked in the Application class, otherwise the Android system could
+     *      power off your printer.</li>
+     * </ul>
+     * </i>
+     */
     public static void powerOn() {
         Printer.powerOn(null, null, null);
     }
 
+    /**
+     * Power on the printer.<br/>
+     * Automatically uses the class name as the tag and writes messages in a log file in the
+     * external cache folder of the app.<br/>
+     * File location: <i>/sdcard/Android/data/APP_PACKAGE_NAME/cache/Printer.log</i><br/>
+     * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
+     * manager or cannot write the log file.<br/>
+     * <br/>
+     * <i>Notes:
+     * <ul>
+     *  <li>Should be invoked in the Application class, otherwise the Android system could
+     *      power off your printer.</li>
+     *  <li>Writing to a file is a slow operation which can affect optimization tests</li>
+     * </ul>
+     * </i>
+     *
+     * @param context Any context
+     */
     public static void powerOn(Context context) {
         Printer.powerOn(null, context, null);
     }
 
+    /**
+     * Power on the printer.<br/>
+     * Automatically uses the class name as the tag and writes messages in a log file in the
+     * specified location.<br/>
+     * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
+     * manager or cannot write the log file.<br/>
+     * <br/>
+     * <i>Notes:
+     * <ul>
+     *  <li>Problems will be reported in the Logcat with the "Printer" tag</li>
+     *  <li>Should be invoked in the Application class, otherwise the Android system could
+     *      power off your printer.</li>
+     *  <li>Writing to a file is a slow operation which can affect optimization tests</li>
+     *  <li>Printer is not including any permissions</li>
+     * </ul>
+     * </i>
+     *
+     * @param context Any context
+     * @param filepath Absolute path location where to write the log file
+     */
     public static void powerOn(Context context, String filepath) {
         Printer.powerOn(null, context, filepath);
     }
 
+    /**
+     * Power on the printer.<br/>
+     * Uses a custom tag and does not write messages in a log file.<br/>
+     * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
+     * manager.<br/>
+     * <br/>
+     * <i>Notes:
+     * <ul>
+     *  <li>Problems will be reported in the Logcat with the "Printer" tag</li>
+     *  <li>Should be invoked in the Application class, otherwise the Android system could
+     *      power off your printer.</li>
+     * </ul>
+     * </i>
+     *
+     * @param tag Tag to be used for all messages
+     */
     public static void powerOn(String tag) {
         Printer.powerOn(tag, null, null);
     }
 
+    /**
+     * Power on the printer.<br/>
+     * Uses a custom tag and writes messages in a log file in the external cache folder of the app.<br/>
+     * The file name is the same as the tag.<br/>
+     * File location: <i>/sdcard/Android/data/APP_PACKAGE_NAME/cache/TAG.log</i><br/>
+     * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
+     * manager or cannot write the log file.<br/>
+     * <br/>
+     * <i>Notes:
+     * <ul>
+     *  <li>Problems will be reported in the Logcat with the "Printer" tag</li>
+     *  <li>Should be invoked in the Application class, otherwise the Android system could
+     *      power off your printer.</li>
+     *  <li>Writing to a file is a slow operation which can affect optimization tests</li>
+     * </ul>
+     * </i>
+     *
+     * @param tag Tag to be used for all messages and for the log file name
+     * @param context Any context
+     */
     public static void powerOn(String tag, Context context) {
         Printer.powerOn(tag, context, null);
     }
 
+    /**
+     * Power on the printer.<br/>
+     * Uses a custom tag and writes messages in a log file in the specified location.<br/>
+     * Prints a warning message in case Printer cannot log uncaught exceptions due to a security
+     * manager or cannot write the log file.<br/>
+     * <br/>
+     * <i>Notes:
+     * <ul>
+     *  <li>Problems will be reported in the Logcat with the "Printer" tag</li>
+     *  <li>Should be invoked in the Application class, otherwise the Android system could
+     *      power off your printer.</li>
+     *  <li>Writing to a file is a slow operation which can affect optimization tests</li>
+     *  <li>Printer is not including any permissions</li>
+     * </ul>
+     * </i>
+     *
+     * @param tag Tag to be used for all messages and for the log file name
+     * @param context Any context
+     * @param filepath Absolute path location where to write the log file
+     */
     public static void powerOn(String tag, Context context, String filepath) {
         synchronized (LOCK) {
             Printer.defaultCrashHandler = Thread.getDefaultUncaughtExceptionHandler();
@@ -101,6 +210,9 @@ public class Printer {
         }
     }
 
+    /**
+     * Power off the printer.
+     */
     public static void powerOff() {
         synchronized (LOCK) {
             Printer.poweredOn = false;
@@ -113,28 +225,64 @@ public class Printer {
         }
     }
 
+    /**
+     * Checks if the printer is on.<br/>
+     * Helpful if you need to write the results of heavy or unusual operations.
+     *
+     * @return Power status
+     */
     public static boolean isPoweredOn() {
         synchronized (LOCK) {
             return poweredOn;
         }
     }
 
+    /**
+     * Prints an INFO message.<br/>
+     * Objects are concatenated as a string.
+     *
+     * @param objs Objects to print
+     */
     public static void i(Object... objs) {
         msg(Log.INFO, objs);
     }
 
+    /**
+     * Prints a WARNING message.<br/>
+     * Objects are concatenated as a string.
+     *
+     * @param objs Objects to print
+     */
     public static void w(Object... objs) {
         msg(Log.WARN, objs);
     }
 
+    /**
+     * Prints an ERROR message.<br/>
+     * Objects are concatenated as a string.
+     *
+     * @param objs Objects to print
+     */
     public static void e(Object... objs) {
         msg(Log.ERROR, objs);
     }
 
+    /**
+     * Prints a DEBUG message.<br/>
+     * Objects are concatenated as a string.
+     *
+     * @param objs Objects to print
+     */
     public static void d(Object... objs) {
         msg(Log.DEBUG, objs);
     }
 
+
+    /**
+     * Create the log file and prints a message directly.<br/>
+     *
+     * @param message Message to print
+     */
     private static void createLogFile(String message) {
         BufferedWriter bufferWriter = null;
         try {
@@ -153,6 +301,14 @@ public class Printer {
         }
     }
 
+    /**
+     * Main method to print messages.<br/>
+     * Takes care of concatenating the objects and print the message on both the Logcat and the log
+     * file.
+     *
+     * @param type Log type
+     * @param objs Objects to print
+     */
     private static void msg(int type, Object... objs) {
         synchronized (LOCK) {
             if (Printer.poweredOn) {
@@ -174,6 +330,13 @@ public class Printer {
         }
     }
 
+    /**
+     * Splits the message if too long and writes the Logcat
+     *
+     * @param type Log type
+     * @param tag Tag to use
+     * @param message Message to print
+     */
     private static void writeLogcat(int type, String tag, String message) {
         int len = message.length();
         for (int i = 0; i < len; i += LINE_MAX_CHARS) {
@@ -181,6 +344,13 @@ public class Printer {
         }
     }
 
+    /**
+     * Writes the file if log file is enabled.
+     *
+     * @param type Log type
+     * @param tag Tag to use
+     * @param message Message to print
+     */
     private static void writeFile(int type, String tag, String message) {
         if (Printer.logFile != null) {
             String messageTypePrefix = "";
@@ -217,6 +387,11 @@ public class Printer {
         }
     }
 
+    /**
+     * Retrieve the name of the class invoking a print method.
+     *
+     * @return Class name
+     */
     private static String getCurrentClassName() {
         boolean printerClassFoundPrev = false;
         try {

@@ -12,9 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 
@@ -106,7 +104,9 @@ public class Printer {
     public static void powerOff() {
         synchronized (LOCK) {
             Printer.poweredOn = false;
-            Thread.setDefaultUncaughtExceptionHandler(Printer.defaultCrashHandler);
+            if (Printer.defaultCrashHandler != null) {
+                Thread.setDefaultUncaughtExceptionHandler(Printer.defaultCrashHandler);
+            }
             Printer.defaultCrashHandler = null;
             Printer.tag = null;
             Printer.logFile = null;

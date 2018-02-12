@@ -25,12 +25,14 @@ public class MainActivity extends AppCompatActivity {
         stringList.add("one");
         stringList.add("two");
         stringList.add("three");
-        Printer.i("String List: ", stringList);
+        Printer.i("List: ", stringList);
 
         Map<String, Integer> stringIntegerMap = new HashMap<>();
         stringIntegerMap.put("one", 1);
         stringIntegerMap.put("two", 2);
         stringIntegerMap.put("three", 3);
         Printer.i("Map: ", stringIntegerMap);
+
+        Printer.e("Exception: ", new Exception());
     }
 }

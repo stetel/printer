@@ -13,6 +13,6 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Printer.powerOn("PrinterDemo", this);
+        Printer.powerOn();
     }
 }

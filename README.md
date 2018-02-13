@@ -1,8 +1,8 @@
-#Introduction
+# Introduction
 Printer is an easy to use - fully featured logging library.
-* use class names automatically as tags
-* use custom tags
-* log on file
+- use class names automatically as tags
+- use custom tags
+- log on file
 
 Power on the printer and forget about everything, just print logs.
 

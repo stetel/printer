@@ -14,11 +14,11 @@ implementation 'com.stetel:printer:1.0.0'
 Check [Stetel Maven repository website](https://maven.stetel.com/help.jsp) for more information.
 
 # Initializing
-First you have to power on the printer. This is better done as soon as possible in th Application class, otherwise Android can destroy the static references so you printer will be powered off.
+First you have to power on the printer. This is better done as soon as possible in the Application class, otherwise Android can destroy the static references so your printer will be powered off.
 ``` 
 Printer.powerOn()
 ```
-This is the base method which replicates the standard Android Log class, but there are others which accepts parameters.
+This is the base method which replicates the standard Android Log class, but there are others which accept parameters.
 Take a look at Javadocs to see what's best for you.
 
 # Usage

@@ -5,27 +5,12 @@ ext {
     versionMinor = 0
     versionPatch = 0
 
-    bintrayRepo = 'maven'
-    bintrayName = 'printer'
-
-    publishedGroupId = 'com.stetel'
-    libraryName = 'Printer'
-    artifact = 'printer'
-
-    libraryDescription = 'An easy to use - fully featured logging library'
-
-    siteUrl = 'https://github.com/stetel/Printer'
-    gitUrl = 'https://github.com/stetel/Printer.git'
-
-    libraryVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
-
-    developerId = 'stetel'
-    developerName = 'Stetel Srl'
-    developerEmail = 'info@stetel.com'
-
-    licenseName = 'GNU LESSER GENERAL PUBLIC LICENSE, Version 3'
-    licenseUrl = 'https://www.gnu.org/licenses/lgpl.txt'
-    allLicenses = ["GNU-LGPL-3.0"]
+    groupId = 'com.stetel'
+    artifactId = 'printer'
+    name = 'Printer'
+    description = 'An easy to use - fully featured logging library'
+    url = 'https://github.com/stetel/printer'
+    inceptionYear = 2018
 }
 
 android {
@@ -50,5 +35,4 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+apply from: 'bintray-publish.gradle'

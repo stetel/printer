@@ -4,6 +4,13 @@ ext {
     versionMajor = 1
     versionMinor = 0
     versionPatch = 0
+
+    groupId = 'com.stetel'
+    artifactId = 'printer'
+    name = 'Printer'
+    description = 'An easy to use - fully featured logging library'
+    url = 'https://github.com/stetel/printer'
+    inceptionYear = 2018
 }
 
 android {
@@ -28,4 +35,4 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-apply from: 'stetel-publish.gradle'
+apply from: 'bintray-publish.gradle'

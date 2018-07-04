@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             int foo = 2/0;
         } catch (Exception e) {
-            Printer.e("Exception: ", e);
+            Printer.e("Dividing by zero: ", e);
         }
     }
 }

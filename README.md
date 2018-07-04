@@ -34,14 +34,17 @@ It uses `String.append()` internally so objects are logged by calling `Object.to
 ```
 Printer.i("Hello world!");
 // Hello world!
+
 Printer.i("Current date is ", new Date());
 // Current date is Wed Jul 04 11:24:31 GMT+02:00 2018
+
 List<String> stringList = new ArrayList<>();
 stringList.add("one");
 stringList.add("two");
 stringList.add("three");
 Printer.i("List: ", stringList);
 // List: [one, two, three]
+
 try {
     int foo = 2/0;
 } catch (Exception e) {
@@ -70,6 +73,9 @@ Starting from API 19, there is no need to declare the WRITE_EXTERNAL_STORAGE per
 It is responsibility of the main app to declare the permission and request it if the developer wants to write in another protected area.
 
 Printer won't write anything on file if it does not have the permission, but will print on the log console as usual.
+
+# Authors
+- Lorenzo Lombardo - _Stetel Srl_ - www.stetel.com
 
 # License
 Printer is available under the [GNU - LGPL 3.0 license](https://www.gnu.org/licenses/lgpl-3.0.txt)

@@ -18,9 +18,15 @@ implementation 'com.stetel:printer:1.0.0'
 # Initializing
 First you have to power on the printer otherwise nothing will be logged. 
 
-This is better done as soon as possible in th Application class, otherwise Android can destroy the static references.
+This is better done as soon as possible by extending the Application class, otherwise Android can destroy the static references.
 ``` 
-Printer.powerOn()
+public class MyApp extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Printer.powerOn();
+    }
+}
 ```
 This base method prepare the library to replicate the standard Android Log class, but you can customize it by using other constructors.
 Take a look at Javadocs to see what's best for you.

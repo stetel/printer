@@ -9,6 +9,9 @@ apply plugin: 'com.jfrog.bintray'
  * Provide the following Shell environment variables:
  * BINTRAY_USER = Bintray username
  * BINTRAY_API_KEY = Bintray Api Key
+ * BINTRAY_GPG_PASSWORD = Bintray GPG private key password
+ * SONATYPE_USER = Sonatype username for publishing to Maven Central
+ * SONATYPE_PASSWORD = Sonatype username for publishing to Maven Central
  *
  * Add the following extra properties to your project:
  * groupId = Group ID for Maven
@@ -19,17 +22,29 @@ apply plugin: 'com.jfrog.bintray'
  *      formal documentation, a quick comment to any readers of the POM is always helpful.
  * url = The URL usually refers to where the project lives.
  * inceptionYear = It will help you remember where you have spent the last few years of your life.
+ * scmUrl = Repository url
+ * licenseName = Standard license name
+ * licenseUrl = Url pointing to the text version of the license
+ * developers = ArrayList containing an HashMap with the following developers information:
+ *          id, name, email, organization, organizationUrl
  *
  * Version: 0.9.8
  */
 checkMandatoryEnvVar('BINTRAY_USER')
 checkMandatoryEnvVar('BINTRAY_API_KEY')
+checkMandatoryEnvVar('BINTRAY_GPG_PASSWORD')
+checkMandatoryEnvVar('SONATYPE_USER')
+checkMandatoryEnvVar('SONATYPE_PASSWORD')
 checkMandatoryProperty('groupId')
 checkMandatoryProperty('artifactId')
 checkMandatoryProperty('name')
 checkMandatoryProperty('description')
 checkMandatoryProperty('url')
 checkMandatoryProperty('inceptionYear')
+checkMandatoryProperty('scmUrl')
+checkMandatoryProperty('licenseName')
+checkMandatoryProperty('licenseUrl')
+checkMandatoryProperty('developers')
 
 android {
     buildTypes {
@@ -82,6 +97,29 @@ publishing {
                 mainNode.appendNode('description', project.ext.get('description'))
                 mainNode.appendNode('url', project.ext.get('url'))
                 mainNode.appendNode('inceptionYear', project.ext.get('inceptionYear'))
+
+                def scmNode = mainNode.appendNode('scm')
+                scmNode.appendNode('url', project.ext.get('scmUrl'))
+
+                def licensesNode = mainNode.appendNode('licenses')
+                def licenseNode = licensesNode.appendNode('license')
+                licenseNode.appendNode('name', project.ext.get('licenseName'))
+                licenseNode.appendNode('url', project.ext.get('licenseUrl'))
+                licenseNode.appendNode('distribution', 'repo')
+
+                def developersNode = mainNode.appendNode('developers')
+                def developers = project.ext.get('developers')
+                developers.each { developer ->
+                    def developerNode = developersNode.appendNode('developer')
+                    developerNode.appendNode('id', developer.get('id'))
+                    developerNode.appendNode('name', developer.get('name'))
+                    developerNode.appendNode('email', developer.get('email'))
+                    developerNode.appendNode('organization', developer.get('organization'))
+                    developerNode.appendNode('organizationUrl', developer.get('organizationUrl'))
+                    def rolesNode = developerNode.appendNode('roles')
+                    rolesNode.appendNode('role', 'developer')
+                }
+
                 def dependenciesNode = mainNode.appendNode('dependencies')
                 List<MyDependency> myDependencies
                 try {
@@ -117,7 +155,7 @@ bintray {
 
         publish = true
         publicDownloadNumbers = false
-        licenses = ["GNU-LGPL-3.0"]
+        licenses = ["LGPL-3.0"]
         vcsUrl = project.ext.get('url') + '.git'
         dryRun = false
         version {
@@ -125,6 +163,16 @@ bintray {
             desc = project.ext.get('description')
             released = new Date()
             vcsTag = android.defaultConfig.versionName
+            gpg {
+                sign = true
+                passphrase = System.getenv('BINTRAY_GPG_PASSWORD')
+            }
+            mavenCentralSync {
+                sync = true
+                user = System.getenv('SONATYPE_USER')
+                password = System.getenv('SONATYPE_PASSWORD')
+                close = '1'
+            }
         }
     }
 }

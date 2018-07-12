@@ -10,7 +10,19 @@ ext {
     name = 'Printer'
     description = 'An easy to use - fully featured logging library'
     url = 'https://github.com/stetel/printer'
+    scmUrl = 'https://github.com/stetel/printer.git'
+    licenseName = 'GNU LESSER GENERAL PUBLIC LICENSE, Version 3'
+    licenseUrl = 'https://www.gnu.org/licenses/lgpl-3.0.txt'
     inceptionYear = 2018
+
+    developers = new ArrayList<>()
+    kazikalDev = new HashMap<>()
+    kazikalDev.put('id', 'kazikal')
+    kazikalDev.put('name', 'Lorenzo Lombardo')
+    kazikalDev.put('email', 'l.lombardo@stetel.com')
+    kazikalDev.put('organization', 'Stetel Srl')
+    kazikalDev.put('organizationUrl', 'http://www.stetel.com')
+    developers.add(kazikalDev)
 }
 
 android {

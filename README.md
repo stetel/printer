@@ -1,5 +1,5 @@
 # Introduction
-An easy to use - fully featured logging library.
+An easy to use - fully featured logging library for Android.
 - no more `TAG` vars, automatically use class names
 - use custom tags
 - log on file

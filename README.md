@@ -84,4 +84,4 @@ Printer won't write anything on file if it does not have the permission, but wil
 - Lorenzo Lombardo - _Stetel Srl_ - www.stetel.com
 
 # License
-Printer is available under the [GNU - LGPL 3.0 license](https://www.gnu.org/licenses/lgpl-3.0.txt)
+Printer is available under the [The Apache Software License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)

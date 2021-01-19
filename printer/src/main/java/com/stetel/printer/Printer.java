@@ -267,6 +267,17 @@ public class Printer {
         msg(Log.DEBUG, objs);
     }
 
+    /**
+     * Get the log file.
+     *
+     * Note this can be unavailable if the Printer is not powered on yet or
+     * if the used powerOn() method does not save a log file.
+     *
+     * @return The current log file instance
+     */
+    public static File getLogFile() {
+        return logFile;
+    }
 
     /**
      * Create the log file and prints a message directly.<br>

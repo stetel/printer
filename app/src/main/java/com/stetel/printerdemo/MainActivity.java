@@ -17,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Printer.i("Log file: ", Printer.getLogFile());
+
         Printer.i("Hello world!");
 
         Printer.i("Current date is ", new Date());

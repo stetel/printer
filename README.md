@@ -12,7 +12,7 @@ Power on the printer and forget about everything, just print logs.
 # Importing
 The library is public and can be imported by adding a dependency in the Gradle build file.
 ```
-implementation 'com.stetel:printer:1.0.1'
+implementation 'com.stetel:printer:1.1.0'
 ```
 
 # Initializing

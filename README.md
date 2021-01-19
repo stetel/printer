@@ -71,6 +71,14 @@ try {
 //        at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:886)
 //        at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:776)
 ```
+# Bonus
+If you enabled Printer by using a powerOn() method which writes a log file, you can easily send an email containing the attachment to a specific address.
+This should be useful when giving out the app to testers.
+Just use
+```
+sendEmailWithLogFile(Context context, String chooserDialogTitle, String address, String subject, String message)
+```
+and a Share dialog will ask which mail app to use for sending the email.
 
 # Permissions
 Printer does not declare any permission. The log file created automatically by certain `Printer.powerOn()` constructors is created under the external cache folder of the app.
@@ -85,3 +93,16 @@ Printer won't write anything on file if it does not have the permission, but wil
 
 # License
 Printer is available under the [The Apache Software License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+# History
+
+### 1.1.0
+- Added method to get the log file
+- Added way to easily send an email with the log file attached
+
+### 1.0.1
+- Changes to readme file
+- Added lib to Maven Central
+
+### 1.0.0 
+- First release

@@ -1,8 +1,11 @@
 package com.stetel.printer;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import androidx.core.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -277,6 +280,39 @@ public class Printer {
      */
     public static File getLogFile() {
         return logFile;
+    }
+
+    /**
+     * Send an email with the log file attached.
+     * Shows a prompt where the user needs to select an email app,
+     * then it fill automatically the field and attach the files.
+     * This is not an automatic way to send an email, the user will
+     * see the mail app and he can change the draft or decide to discard it.
+     *
+     * @param context context
+     * @param chooserDialogTitle title which can be displayed on the dialog for choosing the mail app
+     * @param address recipient email address
+     * @param subject subject of the email
+     * @param message message of the email
+     */
+    public static void sendEmailWithLogFile(Context context, String chooserDialogTitle, String address, String subject, String message) {
+        if (getLogFile() == null) {
+            e("Printer - Cannot invoke sendEmailWithLogFile(): printer is not powered on with the capability to write a log file");
+            return;
+        }
+        try {
+            Uri attachment = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", getLogFile());
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setDataAndType(attachment, "plain/text");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{address});
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            intent.putExtra(Intent.EXTRA_STREAM, attachment);
+            intent.putExtra(Intent.EXTRA_TEXT, message);
+            context.startActivity(Intent.createChooser(intent, chooserDialogTitle));
+        } catch (Exception e) {
+            e("Printer - Cannot invoke sendEmailWithLogFile(): ", e);
+        }
     }
 
     /**

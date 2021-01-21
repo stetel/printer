@@ -289,19 +289,23 @@ public class Printer {
      * This is not an automatic way to send an email, the user will
      * see the mail app and he can change the draft or decide to discard it.
      *
+     * NOTE: You need to define a FileProvider in the manifest to make this work.
+     * Please check the README for details.
+     *
      * @param context context
+     * @param providerAuthority
      * @param chooserDialogTitle title which can be displayed on the dialog for choosing the mail app
      * @param address recipient email address
      * @param subject subject of the email
      * @param message message of the email
      */
-    public static void sendEmailWithLogFile(Context context, String chooserDialogTitle, String address, String subject, String message) {
+    public static void sendEmailWithLogFile(Context context, String providerAuthority, String chooserDialogTitle, String address, String subject, String message) {
         if (getLogFile() == null) {
             e("Printer - Cannot invoke sendEmailWithLogFile(): printer is not powered on with the capability to write a log file");
             return;
         }
         try {
-            Uri attachment = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", getLogFile());
+            Uri attachment = FileProvider.getUriForFile(context, providerAuthority, getLogFile());
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setDataAndType(attachment, "plain/text");
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Printer.sendEmailWithLogFile(
                             MainActivity.this,
+                            BuildConfig.APPLICATION_ID + ".fileprovider",
                             "Select the app for sending the email",
                             emailAddress,
                             "Printer log file",

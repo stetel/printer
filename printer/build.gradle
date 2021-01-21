@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 ext {
     versionMajor = 1
     versionMinor = 1
-    versionPatch = 0
+    versionPatch = 1
 
     groupId = 'com.stetel'
     artifactId = 'printer'

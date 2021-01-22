@@ -91,8 +91,7 @@ Then edit the app's `AndroidManifest.xml` and add the following inside the appli
     android:name="androidx.core.content.FileProvider"
     android:authorities="${applicationId}.fileprovider"
     android:exported="false"
-    android:grantUriPermissions="true"
-    android:enabled="false">
+    android:grantUriPermissions="true">
     <meta-data
         android:name="android.support.FILE_PROVIDER_PATHS"
         android:resource="@xml/printer_provider_paths" />
@@ -101,7 +100,7 @@ Then edit the app's `AndroidManifest.xml` and add the following inside the appli
 
 ### Have a file provider
 You only have to change you paths xml to include the folder with the log file.
-If you have a generic implementation like path="." you don't have to do anything, otherwise you need to add a specific rule. 
+If you have a generic implementation like `path="."` you don't have to do anything, otherwise you need to add a specific rule. 
 For example if you use powerOn() with context without specifying the path, the log file will be created in the cache folder of the app. So the correct path to include in the xml will be:
 ```
 <?xml version="1.0" encoding="utf-8"?>

@@ -49,4 +49,4 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
 }
 
-apply from: 'bintray-publish.gradle'
+apply from: 'publish-mavencentral.gradle'

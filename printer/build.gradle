@@ -10,10 +10,11 @@ ext {
     name = 'Printer'
     description = 'An easy to use - fully featured logging library for Android'
     url = 'https://github.com/stetel/printer'
+    scmConnection = 'scm:git:github.com/stetel/printer.git'
     scmUrl = 'https://github.com/stetel/printer.git'
     licenseName = 'The Apache Software License, Version 2.0'
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    inceptionYear = 2018
+    inceptionYear = '2018'
 
     developers = new ArrayList<>()
     kazikalDev = new HashMap<>()

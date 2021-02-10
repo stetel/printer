@@ -1,17 +1,17 @@
 import java.nio.charset.StandardCharsets
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'signing'
 
 /*
  * This Gradle file takes care of creating anything necessary to publish a library module to
  * the Bintray JCenter repository.
  *
  * Provide the following Shell environment variables:
- * BINTRAY_USER = Bintray username
- * BINTRAY_API_KEY = Bintray Api Key
- * BINTRAY_GPG_PASSWORD = Bintray GPG private key password
  * SONATYPE_USER = Sonatype username for publishing to Maven Central
  * SONATYPE_PASSWORD = Sonatype username for publishing to Maven Central
+ * SONATYPE_GPG_KEY_ID = Sonatype GPG certificate key id (last 8 char of the fingerprint)
+ * SONATYPE_GPG_PASSWORD = Sonatype GPG certificate password
+ * SONATYPE_GPG_KEY_RING_FILE = Sonatype GPG certificate key ring file (binary exported via 'gpg --export-secret-keys' command)
  *
  * Add the following extra properties to your project:
  * groupId = Group ID for Maven
@@ -22,19 +22,20 @@ apply plugin: 'com.jfrog.bintray'
  *      formal documentation, a quick comment to any readers of the POM is always helpful.
  * url = The URL usually refers to where the project lives.
  * inceptionYear = It will help you remember where you have spent the last few years of your life.
+ * scmConnection = SCM path (usually scm:git:REPOSITORY_URL.git without http://)
  * scmUrl = Repository url
  * licenseName = Standard license name
  * licenseUrl = Url pointing to the text version of the license
  * developers = ArrayList containing an HashMap with the following developers information:
  *          id, name, email, organization, organizationUrl
  *
- * Version: 0.9.8
+ * Version: 1.0.0
  */
-checkMandatoryEnvVar('BINTRAY_USER')
-checkMandatoryEnvVar('BINTRAY_API_KEY')
-checkMandatoryEnvVar('BINTRAY_GPG_PASSWORD')
 checkMandatoryEnvVar('SONATYPE_USER')
 checkMandatoryEnvVar('SONATYPE_PASSWORD')
+checkMandatoryEnvVar('SONATYPE_GPG_KEY_ID')
+checkMandatoryEnvVar('SONATYPE_GPG_PASSWORD')
+checkMandatoryEnvVar('SONATYPE_GPG_KEY_RING_FILE')
 checkMandatoryProperty('groupId')
 checkMandatoryProperty('artifactId')
 checkMandatoryProperty('name')
@@ -45,6 +46,10 @@ checkMandatoryProperty('scmUrl')
 checkMandatoryProperty('licenseName')
 checkMandatoryProperty('licenseUrl')
 checkMandatoryProperty('developers')
+
+ext["signing.keyId"] = System.getenv('SONATYPE_GPG_KEY_ID')
+ext["signing.password"] = System.getenv('SONATYPE_GPG_PASSWORD')
+ext["signing.secretKeyRingFile"] = System.getenv('SONATYPE_GPG_KEY_RING_FILE')
 
 android {
     buildTypes {
@@ -84,97 +89,81 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 publishing {
     publications {
-        Production(MavenPublication) {
+        release(MavenPublication) {
             groupId project.ext.get('groupId')
             artifactId project.ext.get('artifactId')
             version android.defaultConfig.versionName
             artifact("$buildDir/outputs/aar/${project.name}-release.aar")
             artifact sourcesJar
             artifact javadocJar
-            pom.withXml {
-                def mainNode = asNode()
-                mainNode.appendNode('name', project.ext.get('name'))
-                mainNode.appendNode('description', project.ext.get('description'))
-                mainNode.appendNode('url', project.ext.get('url'))
-                mainNode.appendNode('inceptionYear', project.ext.get('inceptionYear'))
-
-                def scmNode = mainNode.appendNode('scm')
-                scmNode.appendNode('url', project.ext.get('scmUrl'))
-
-                def licensesNode = mainNode.appendNode('licenses')
-                def licenseNode = licensesNode.appendNode('license')
-                licenseNode.appendNode('name', project.ext.get('licenseName'))
-                licenseNode.appendNode('url', project.ext.get('licenseUrl'))
-                licenseNode.appendNode('distribution', 'repo')
-
-                def developersNode = mainNode.appendNode('developers')
-                def developers = project.ext.get('developers')
-                developers.each { developer ->
-                    def developerNode = developersNode.appendNode('developer')
-                    developerNode.appendNode('id', developer.get('id'))
-                    developerNode.appendNode('name', developer.get('name'))
-                    developerNode.appendNode('email', developer.get('email'))
-                    developerNode.appendNode('organization', developer.get('organization'))
-                    developerNode.appendNode('organizationUrl', developer.get('organizationUrl'))
-                    def rolesNode = developerNode.appendNode('roles')
-                    rolesNode.appendNode('role', 'developer')
+            pom {
+                name = project.ext.get('artifactId')
+                description = project.ext.get('description')
+                url = project.ext.get('url')
+                inceptionYear = project.ext.get('inceptionYear')
+                licenses {
+                    license {
+                        name = project.ext.get('licenseName')
+                        url = project.ext.get('licenseUrl')
+                    }
                 }
+                scm {
+                    connection = project.ext.get('scmConnection')
+                    developerConnection = project.ext.get('scmConnection')
+                    url = project.ext.get('scmUrl')
+                }
+                withXml {
+                    def mainNode = asNode()
+                    // adding developers
+                    def developersNode = mainNode.appendNode('developers')
+                    def developers = project.ext.get('developers')
+                    developers.each { developer ->
+                        def developerNode = developersNode.appendNode('developer')
+                        developerNode.appendNode('id', developer.get('id'))
+                        developerNode.appendNode('name', developer.get('name'))
+                        developerNode.appendNode('email', developer.get('email'))
+                        developerNode.appendNode('organization', developer.get('organization'))
+                        developerNode.appendNode('organizationUrl', developer.get('organizationUrl'))
+                        def rolesNode = developerNode.appendNode('roles')
+                        rolesNode.appendNode('role', 'developer')
+                    }
+                    // adding dependencies
+                    def dependenciesNode = mainNode.appendNode('dependencies')
+                    List<MyDependency> myDependencies
+                    try {
+                        myDependencies = processDependencies(configurations.getByName("compile"),
+                                myDependencies, false)
+                    } catch (UnknownConfigurationException e) {
+                        // compile not supported by this Gradle version
+                    }
+                    try {
+                        myDependencies = processDependencies(configurations.getByName("api"),
+                                myDependencies, false)
+                        myDependencies = processDependencies(configurations.getByName("implementation"),
+                                myDependencies, true)
+                    } catch (UnknownConfigurationException e) {
+                        // api/implementation not supported by this Gradle version
+                    }
+                    addPomDependencies(dependenciesNode, myDependencies)
+                }
+            }
+        }
+    }
 
-                def dependenciesNode = mainNode.appendNode('dependencies')
-                List<MyDependency> myDependencies
-                try {
-                    myDependencies = processDependencies(configurations.getByName("compile"),
-                            myDependencies, false)
-                } catch (UnknownConfigurationException e) {
-                    // compile not supported by this Gradle version
-                }
-                try {
-                    myDependencies = processDependencies(configurations.getByName("api"),
-                            myDependencies, false)
-                    myDependencies = processDependencies(configurations.getByName("implementation"),
-                            myDependencies, true)
-                } catch (UnknownConfigurationException e) {
-                    // api/implementation not supported by this Gradle version
-                }
-                addPomDependencies(dependenciesNode, myDependencies)
+    repositories {
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username System.getenv('SONATYPE_USER')
+                password System.getenv('SONATYPE_PASSWORD')
             }
         }
     }
 }
 
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_API_KEY')
-    publications = ['Production']
-    override = true
-    pkg {
-        userOrg = 'stetel'
-        repo = 'Android'
-        name = project.ext.get('artifactId')
-        description = project.ext.get('description')
-
-        publish = true
-        publicDownloadNumbers = false
-        licenses = ["LGPL-3.0"]
-        vcsUrl = project.ext.get('url') + '.git'
-        dryRun = false
-        version {
-            name = android.defaultConfig.versionName
-            desc = project.ext.get('description')
-            released = new Date()
-            vcsTag = android.defaultConfig.versionName
-            gpg {
-                sign = true
-                passphrase = System.getenv('BINTRAY_GPG_PASSWORD')
-            }
-            mavenCentralSync {
-                sync = true
-                user = System.getenv('SONATYPE_USER')
-                password = System.getenv('SONATYPE_PASSWORD')
-                close = '1'
-            }
-        }
-    }
+signing {
+    sign publishing.publications
 }
 
 void checkMandatoryProperty(String name) {

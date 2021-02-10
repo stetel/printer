@@ -10,10 +10,20 @@ An easy to use - fully featured logging library for Android.
 Power on the printer and forget about everything, just print logs.
 
 # Importing
-The library is public and can be imported by adding a dependency in the Gradle build file.
+The library is available at MavenCentral and can be imported by adding a dependency in the Gradle build file.
 ```
 implementation 'com.stetel:printer:1.1.1'
 ```
+
+Check if you have the correct repositories in the root (not app) gradle file.
+``` 
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+``` 
 
 # Initializing
 First you have to power on the printer otherwise nothing will be logged. 
